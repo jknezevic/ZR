@@ -8,7 +8,7 @@ def detect_colour(input_image):
     """
     Detektira boju karte (crvena ili crna)
     :param input_image: image for processing
-    :return: No return value
+    :return: returns transformed image and True or False, whether image is red (True) or black (False)
     """
     black_b = black_background(input_image, 100)
     input_image = filter_red(black_b, 0)
@@ -33,7 +33,7 @@ def find_symbols(input_image):
     """
     Pronalazi na karti pozicije broja i boje te ih ekstraktira u nove matrice
     :param input_image: image for processing
-    :return: dimension of new image matrix for rank and suit
+    :return: dimensions of new image matrix for rank and suit
     """
     grey_warped_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
     black_and_white = threshold_adaptive(grey_warped_image, 250, offset=10) # napravi binarnu sliku, crno-bijelu
@@ -108,7 +108,7 @@ def detect_value_picture(input_image):
     """
 
     :param input_image: image for processing
-    :return:
+    :return: returns whether a card is Jack, Queen or King
     """
     grey_warped_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
     black_and_white = threshold_adaptive(grey_warped_image, 250, offset=10) # napravi binarnu sliku, crno-bijelu
@@ -173,7 +173,7 @@ def detect_suit(input_image, is_red):
     Detektira "boju" karte (pik, herc, karo, tref)
     :param input_image: image for processing
     :param is_red: flag, if 1 -> check just hearts and diamonds, else check clubs and spades
-    :return:
+    :return: returns card suit
     """
 
     grey_warped_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)

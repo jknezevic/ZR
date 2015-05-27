@@ -174,11 +174,11 @@ def detect_value_picture(input_image):
     print "KRALJ: ", king_hom
 
     if max(jack_hom, queen_hom, king_hom) == jack_hom:
-        return "Decko"
+        return "Jack"
     elif max(jack_hom, queen_hom, king_hom) == queen_hom:
-        return "Dama"
+        return "Queen"
     elif max(jack_hom, queen_hom, king_hom) == king_hom:
-        return "Kralj"
+        return "King"
     else:
         return "###FAIL###"
 
@@ -224,19 +224,19 @@ def detect_suit(input_image, is_red):
         hearts_hom = hit_or_miss(black_and_white, hearts_bw)
         diamonds_hom = hit_or_miss(black_and_white, diamonds_bw)
         if max(hearts_hom, diamonds_hom) == hearts_hom:
-            return "Herc"
+            return "Hearts"
             # is_hearts = True
         elif max(hearts_hom, diamonds_hom) == diamonds_hom:
-            return "Karo"
+            return "Diamonds"
             # is_diamonds = True
     elif is_red is False:
         spades_hom = hit_or_miss(black_and_white, spades_bw)
         clubs_hom = hit_or_miss(black_and_white, clubs_bw)
         if max(spades_hom, clubs_hom) == spades_hom:
-            return "Pik"
+            return "Spades"
             # is_spades = True
         elif max(spades_hom, clubs_hom) == clubs_hom:
-            return "Tref"
+            return "Clubs"
             # is_clubs = True
     else:
         return "Nisam dobro prepoznao boju!"

@@ -1,5 +1,6 @@
 import numpy as np, cv2
 
+
 def order_points(points):
     """
     Sortira koordinate pravokutnika u poretku za transformacijsku matricu
@@ -21,6 +22,7 @@ def order_points(points):
     rect[3] = points[np.argmax(d)]  # donji lijevi vrh ima najvecu razliku x i y koordinata
 
     return rect
+
 
 def transform(image, points):
     """

@@ -1,9 +1,11 @@
+import sys
+sys.dont_write_bytecode = True
+
 from transformation import transform
-from skimage.filter import threshold_adaptive
 import imutils, numpy as np, cv2, argparse
 from imgproc import *
 from classification import *
-from glob import glob
+
 
 # fensi uredjivanje za pozivanje programa
 ap = argparse.ArgumentParser()
@@ -21,7 +23,7 @@ image = imutils.resize(image, height=350)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # convert to grayscale
 gray = cv2.GaussianBlur(gray, (5, 5), 0)  # reduce noise
 
-edged_img = cv2.Canny(image, 75, 200)  # wide threshold za cannya
+edged_img = cv2.Canny(gray, 75, 200)  # wide threshold za cannya
 cv2.imshow("Image", image)
 cv2.imshow("Edged image", edged_img)
 cv2.waitKey(0)
@@ -37,7 +39,7 @@ contours = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
 relevant_areas = [contours[0], contours[1]]
 # print contours
 # squares = []
-best_contour =[]
+best_contour = []
 for cnt in contours:
 
     perimeter = cv2.arcLength(cnt, True)  # racuna opseg konture
@@ -62,9 +64,13 @@ warped_image = transform(orig, best_contour.reshape(4, 2) * ratio)
 # black_and_white = threshold_adaptive(grey_warped_image, 250, offset=10) # napravi binarnu sliku, crno-bijelu
 # black_and_white = black_and_white.astype("uint8") * 255
 cv2.imshow("Original", imutils.resize(orig, height=350))
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 # warped_image = warped_image.astype("uint8") * 255
 cv2.imshow("Warped perspective", imutils.resize(warped_image, height=350))
-type = detect_type(warped_image) # 1 -> numericka, 2 -> royal
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+type = detect_type(warped_image)  # 1 -> numericka, 2 -> royal
 # print "Tip je ", type
 red_image, is_red = detect_colour(warped_image)
 rank_dim, suit_dim = find_symbols(warped_image)
@@ -82,16 +88,14 @@ if type == 1:
     # detektiraj vrijednost karte, ukoliko je numericka
     rank_sym = detect_value(warped_image)
     # print count_blobs
-    if rank_sym == 1: # onda je A, posebno raspoznavanje
+    if rank_sym == 1:   # onda je A, posebno raspoznavanje
         rank_sym = 'A'
 else:  # tip je "royal"
     rank_sym = detect_value_picture(rank)
 
 suit_sym = detect_suit(suit, is_red)
 text = str(rank_sym) + " " + str(suit_sym)
-# cv2.imshow("Red picture", red_image)
-cv2.putText(warped_image, text, (67, 168), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0))
+cv2.putText(warped_image, text, (67, 168), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255))
 cv2.imshow("Recognition", warped_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-

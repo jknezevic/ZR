@@ -1,6 +1,6 @@
 import numpy as np, cv2
 
-width, height, area = 250, 350, 250*350
+width, height, area = 250, 350, 250 * 350
 
 
 def black_background(input_image, white_level):
@@ -57,7 +57,7 @@ def is_red_suit(input_image, thresh, target_regions, percentage_red):
     red_regions = [False, False]
     region_width, region_height = 32, 93
 
-    regions = [input_image[5:region_height, 5:region_width], input_image[247:(247 + 98), 208:(208+37)]]
+    regions = [input_image[5:region_height, 5:region_width], input_image[247:(247 + 98), 208:(208 + 37)]]
     # print regions
     for i in xrange(2):
         blue, green, red = 0, 0, 0
@@ -73,7 +73,6 @@ def is_red_suit(input_image, thresh, target_regions, percentage_red):
                 elif max(r, g, b) == b and b > thresh:
                     blue += 1
 
-
         total = float(region_width * region_height)
         match_perc = red / total
 
@@ -83,42 +82,35 @@ def is_red_suit(input_image, thresh, target_regions, percentage_red):
 
     return count_red >= target_regions
 
+
 def find_squares(input_image):
     """
     Pronalazi broj kvadrata na karti, sto pomaze kod odredjivanja je li karta slika (J, Q, K) ili samo numericka
     :param input_image: image for processing
     :return: returns 1 if image type is numeric, and 2 if image type is royal
     """
-    # dims = input_image.shape
-    # grey = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
-    edged = cv2.Canny(input_image, 0, 100)
-    # cv2.imshow('canny', edged_grey)
+
+    gray = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)  # convert to grayscale
+    gray = cv2.GaussianBlur(gray, (5, 5), 0)  # reduce noise
+    edged = cv2.Canny(gray, 0, 100)
+    cv2.imshow('canny', edged)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     (contours, _) = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key=cv2.contourArea, reverse=True)[:3]
-
-    get_areas = [cv2.contourArea(cnt) for cnt in contours]
-    # print len(contours)
-    # print get_areas
 
     best_contour = []
     for cnt in contours:
         approx = cv2.approxPolyDP(cnt, cv2.arcLength(cnt, True) * 0.02, True)
         area = cv2.contourArea(approx)
         # print area
-        if len(approx) == 4 and get_areas[0] > area > get_areas[0] * 0.5:
+        if len(approx) == 4 and area > 40000:
             best_contour.append(approx)
 
-    # print best_contour
-    '''
-    for i in best_contour:
-        cv2.drawContours(input_image, [i], -1, (0,255,0), 2)
-    #print len(best_contour)
-    '''
-
     if len(best_contour) < 1:
-        return 1 # karta je numericka
-    else:
-        return 2 # karta je J || Q || K
+        return 1  # karta je numericka
+    elif len(best_contour) >= 1:
+        return 2  # karta je J || Q || K
 
 
 def xor(image1, image2):
@@ -135,6 +127,7 @@ def xor(image1, image2):
     r = cv2.boundingRect(contours)
 
     return r
+
 
 def hit_or_miss(image, template):
     """

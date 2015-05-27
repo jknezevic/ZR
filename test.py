@@ -76,8 +76,8 @@ red_image, is_red = detect_colour(warped_image)
 rank_dim, suit_dim = find_symbols(warped_image)
 x_r, y_r, w_r, h_r = rank_dim
 x_s, y_s, w_s, h_s = suit_dim
-cv2.rectangle(warped_image, (x_r, y_r), (x_r + w_r, y_r + h_r), (255, 0, 0))
-cv2.rectangle(warped_image, (x_s, y_s), (x_s + w_s, y_s + h_s), (255, 0, 0))
+cv2.rectangle(warped_image, (x_r, y_r), (x_r + w_r, y_r + h_r), (255, 0, 0), 2)
+cv2.rectangle(warped_image, (x_s, y_s), (x_s + w_s, y_s + h_s), (255, 0, 0), 2)
 # cv2.imshow("KUTEVI", warped_image)
 # print rank_dim, suit_dim
 rank = warped_image[y_r + 1:y_r + h_r - 1, x_r + 1:x_r + w_r - 1]
@@ -98,9 +98,10 @@ else:  # tip je "royal"
 suit_sym = detect_suit(suit, is_red)
 # text = str(rank_sym) + " " + str(suit_sym)
 for_text = np.ones(warped_image.shape)
-cv2.putText(for_text, "Color: " + "Red" if is_red else "Black", (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255))
-cv2.putText(for_text, "Rank: " + str(rank_sym), (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255))
-cv2.putText(for_text, "Suit: " + str(suit_sym), (30, 90), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255))
+cv2.putText(for_text, "Color: " + "Red" if is_red else "Color: " + "Black", (30, 30),
+            cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
+cv2.putText(for_text, "Rank: " + str(rank_sym), (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
+cv2.putText(for_text, "Suit: " + str(suit_sym), (30, 90), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0))
 cv2.imshow("Original", imutils.resize(orig, height=350))
 cv2.imshow("Recognition", warped_image)
 cv2.imshow("Card Info", for_text)

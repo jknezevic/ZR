@@ -96,8 +96,11 @@ else:  # tip je "royal"
     rank_sym = detect_value_picture(rank)
 
 suit_sym = detect_suit(suit, is_red)
-text = str(rank_sym) + " " + str(suit_sym)
-cv2.putText(warped_image, text, (67, 168), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255))
+# text = str(rank_sym) + " " + str(suit_sym)
+for_text = np.ones((120, 250, 3))
+cv2.putText(for_text, "Rank: " + str(rank_sym), (30, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255))
+cv2.putText(for_text, "Suit: " + str(suit_sym), (80, 80), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255))
 cv2.imshow("Recognition", warped_image)
+cv2.imshow("Card Info", for_text)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

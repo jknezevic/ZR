@@ -113,7 +113,7 @@ def find_squares(input_image):
         return 2  # karta je J || Q || K
 
 
-def xor(image1, image2):
+def xor(image1, image2, rects):
     """
     XOR nad svim elementima slike (bitwise xor) i pravi crop nad regijom gdje nadje da je znak
     :param image1:
@@ -122,11 +122,19 @@ def xor(image1, image2):
     """
     dims = image1.shape
     xord = image1 ^ image2
+    cv2.imshow('xor', xord)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     (contours, _) = cv2.findContours(xord, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    contours = sorted(contours, key=cv2.contourArea, reverse=True)[0]
-    r = cv2.boundingRect(contours)
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
-    return r
+    # for x in contours:
+        # print "AREA: ", cv2.boundingRect(x), cv2.contourArea(x)
+    # get_r1 = [x[1] for x in rects if len(rects)]
+    for cnt in contours:
+        r = cv2.boundingRect(cnt)
+        if r not in rects:
+            return r
 
 
 def hit_or_miss(image, template):
@@ -134,7 +142,7 @@ def hit_or_miss(image, template):
     Uzima dvije 1-channel slike i vraca postotak slicnosti izmedju njih
     :param image: Image to compare vs template
     :param template: template of sign
-    :return: percentage of similarity between comapred images
+    :return: percentage of similarity between compared images
     """
 
     total = image.shape[0] * image.shape[1]

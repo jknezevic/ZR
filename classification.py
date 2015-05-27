@@ -42,7 +42,7 @@ def find_symbols(input_image):
     black_and_white = threshold_adaptive(grey_warped_image, 250, offset=10)  # napravi binarnu sliku, crno-bijelu
     black_and_white = black_and_white.astype("uint8") * 255
 
-    kernel = np.ones((3, 3), 'uint8')
+    kernel = np.ones((3, 2), 'uint8')
     # print black_and_white[20][20]
     black_and_white = cv2.erode(black_and_white, kernel, iterations=1)
     # cv2.imshow('Erodirana', black_and_white)
@@ -52,7 +52,7 @@ def find_symbols(input_image):
 
     blob_found = False
     region_width, region_height = 32, 93
-    rect_top, rect_bot = input_image[5:region_height, 5:region_width], input_image[247:(247 + 98), 208:(208 + 37)]
+    # rect_top, rect_bot = input_image[5:region_height, 5:region_width], input_image[247:(247 + 98), 208:(208 + 37)]
     # print black_and_white.shape
     mask = np.zeros((black_and_white.shape[0] + 2, black_and_white.shape[1] + 2), 'uint8')
     bin_card = black_and_white.copy()
@@ -62,10 +62,19 @@ def find_symbols(input_image):
             bgr = black_and_white[y][x]
             if bgr == 0:
                 cv2.floodFill(black_and_white, mask, (x, y), (255, 255, 255))
-                # cv2.imshow("flooded", black_and_white)
-                rects.append(xor(black_and_white, bin_card))
+                cv2.imshow("flooded", black_and_white)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+                rects.append(xor(black_and_white, bin_card, rects))
 
-    rank_dim, suit_dim = rects[0], rects[1]
+    print "RECTS: ", rects
+    if len(rects) < 3:
+        rank_dim, suit_dim = rects[0], rects[1]
+    else:
+        x1, y1, w1, h1 = rects[0]
+        x2, y2, w2, h2 = rects[1]
+        rank_dim = (x1, y1, w1 + w2 + 2, h1)
+        suit_dim = rects[2]
 
     return rank_dim, suit_dim
 
@@ -122,7 +131,7 @@ def detect_value_picture(input_image):
 
     # print "BW shape", black_and_white.shape
 
-    # cv2.imshow("one channel", black_and_white)
+    cv2.imshow("one channel", black_and_white)
     jack, queen, king = cv2.imread("simboli/jack.png"), cv2.imread("simboli/queen.png"), cv2.imread("simboli/king.png")
 
     # jack_cnt, queen_cnt, king_cnt = 0, 0, 0
@@ -159,7 +168,10 @@ def detect_value_picture(input_image):
     # print "Black and white size" + str(black_and_white.shape) + "\n HOM size" + str(jack_hom.shape)
 
 
-    # print jack_hom, king_hom, queen_hom
+    print "VJEROJATNOSTI SLIKA: "
+    print "DECKO: ", jack_hom
+    print "DAMA: ", queen_hom
+    print "KRALJ: ", king_hom
 
     if max(jack_hom, queen_hom, king_hom) == jack_hom:
         return "Decko"

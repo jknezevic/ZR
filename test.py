@@ -10,7 +10,7 @@ from classification import *
 # fensi uredjivanje za pozivanje programa
 ap = argparse.ArgumentParser()
 ap.add_argument('-i', '--image', required=True, help="Path to image")
-#ap.add_argument('-t', '--templates', required=True, help="Path to templates image")
+# ap.add_argument('-t', '--templates', required=True, help="Path to templates image")
 args = vars(ap.parse_args())
 
 
@@ -82,13 +82,15 @@ cv2.rectangle(warped_image, (x_s, y_s), (x_s + w_s, y_s + h_s), (255, 0, 0))
 # print rank_dim, suit_dim
 rank = warped_image[y_r + 1:y_r + h_r - 1, x_r + 1:x_r + w_r - 1]
 suit = warped_image[y_s + 1:y_s + h_s - 1, x_s + 1:x_s + w_s - 1]
-# cv2.imshow("Rank", rank)
-# cv2.imshow("Suit", suit)
+cv2.imshow("Rank", rank)
+cv2.imshow("Suit", suit)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 if type == 1:
     # detektiraj vrijednost karte, ukoliko je numericka
     rank_sym = detect_value(warped_image)
     # print count_blobs
-    if rank_sym == 1:   # onda je A, posebno raspoznavanje
+    if rank_sym <= 1:   # onda je A, posebno raspoznavanje
         rank_sym = 'A'
 else:  # tip je "royal"
     rank_sym = detect_value_picture(rank)

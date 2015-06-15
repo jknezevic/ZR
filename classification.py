@@ -13,11 +13,16 @@ def detect_colour(input_image):
     """
     black_b = black_background(input_image, 100)
     input_image = filter_red(black_b, 0)
-    is_red = is_red_suit(input_image, 100, 2, 0.10)
+    is_red = is_red_suit(input_image, 100, 2, 0.095)
 
     # print is_red
     # cv2.imshow("Black", black_b)
+    # cv2.imwrite("blackb.jpg", black_b)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     # cv2.imshow("Filter red", input_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     # cv2.imwrite('crvena.jpg', filter_r)
 
     return input_image, is_red
@@ -57,17 +62,20 @@ def find_symbols(input_image):
     mask = np.zeros((black_and_white.shape[0] + 2, black_and_white.shape[1] + 2), 'uint8')
     bin_card = black_and_white.copy()
     rects = []
-    for y in xrange(5, region_height):
-        for x in xrange(5, region_width):
-            bgr = black_and_white[y][x]
+    # cnt = 0
+    for y in np.arange(5, region_height):
+        for x in np.arange(5, region_width):
+            bgr = black_and_white[y, x]
             if bgr == 0:
                 cv2.floodFill(black_and_white, mask, (x, y), (255, 255, 255))
-                cv2.imshow("flooded", black_and_white)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
+                # cv2.imshow("flooded", black_and_white)
+                # cv2.imwrite("flooded" + str(cnt) +".jpg", black_and_white)
+                # cnt += 1
+                # cv2.waitKey(0)
+                # cv2.destroyAllWindows()
                 rects.append(xor(black_and_white, bin_card, rects))
 
-    print "RECTS: ", rects
+    # print "RECTS: ", rects
     if len(rects) < 3:
         rank_dim, suit_dim = rects[0], rects[1]
     else:
@@ -89,6 +97,8 @@ def detect_value(input_image):
     black_and_white = threshold_adaptive(grey_warped_image, 250, offset=10)  # napravi binarnu sliku, crno-bijelu
     black_and_white = black_and_white.astype("uint8") * 255
 
+    # cv2.imshow('binarna', black_and_white)
+
     kernel = np.ones((3, 3), 'uint8')
     # ignoriraj kuteve
     region_width, region_height = 32, 93
@@ -99,21 +109,25 @@ def detect_value(input_image):
     cv2.rectangle(black_and_white, (218, 263), (218 + 29, 263 + 82), (255, 255, 255), -1)
 
     # cv2.imshow("bez kuteva", black_and_white)
+    # cv2.imwrite('bezkuteva.jpg', black_and_white)
 
     black_and_white = cv2.dilate(black_and_white, kernel, iterations=1)
 
     # cv2.imshow("Dilate", black_and_white)
-
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     black_and_white = cv2.morphologyEx(black_and_white, cv2.MORPH_CLOSE, kernel=np.ones((5, 5), 'uint8'), iterations=3)
     mask = np.zeros((black_and_white.shape[0] + 2, black_and_white.shape[1] + 2), 'uint8')
     # cv2.imshow("Closed", black_and_white)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    # .imwrite("closed.jpg", black_and_white)
     count_blobs = 0
-    for y in xrange(black_and_white.shape[0]):
-        for x in xrange(black_and_white.shape[1]):
-            if black_and_white[y][x] == 0:
+    for y in np.arange(black_and_white.shape[0]):
+        for x in np.arange(black_and_white.shape[1]):
+            if black_and_white[y, x] == 0:
                 count_blobs += 1
                 cv2.floodFill(black_and_white, mask, (x, y), (255, 255, 255))
-
     return count_blobs
 
 
@@ -131,7 +145,7 @@ def detect_value_picture(input_image):
 
     # print "BW shape", black_and_white.shape
 
-    cv2.imshow("one channel", black_and_white)
+    # cv2.imshow("one channel", black_and_white)
     jack, queen, king = cv2.imread("simboli/jack.png"), cv2.imread("simboli/queen.png"), cv2.imread("simboli/king.png")
 
     # jack_cnt, queen_cnt, king_cnt = 0, 0, 0
@@ -219,10 +233,14 @@ def detect_suit(input_image, is_red):
     grey_clubs_image = cv2.cvtColor(clubs, cv2.COLOR_BGR2GRAY)
     clubs_bw = threshold_adaptive(grey_clubs_image, 250, offset=10)  # napravi binarnu sliku, crno-bijelu
     clubs_bw = clubs_bw.astype("uint8") * 255
-
+    redness = "crvena" if is_red else "crna"
+    print "KARTA JE: ", redness
+    print "VJEROJATNOSTI SIMBOLA BOJE: "
     if is_red is True:
         hearts_hom = hit_or_miss(black_and_white, hearts_bw)
         diamonds_hom = hit_or_miss(black_and_white, diamonds_bw)
+        print "HEARTS ", hearts_hom
+        print "DIAMONDS ", diamonds_hom
         if max(hearts_hom, diamonds_hom) == hearts_hom:
             return "Hearts"
             # is_hearts = True
@@ -232,6 +250,8 @@ def detect_suit(input_image, is_red):
     elif is_red is False:
         spades_hom = hit_or_miss(black_and_white, spades_bw)
         clubs_hom = hit_or_miss(black_and_white, clubs_bw)
+        print "SPADES: ", spades_hom
+        print "CLUBS: ", clubs_hom
         if max(spades_hom, clubs_hom) == spades_hom:
             return "Spades"
             # is_spades = True

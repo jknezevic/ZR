@@ -1,7 +1,7 @@
 import numpy as np, cv2
 from imgproc import *
 from skimage.filter import threshold_adaptive
-from scipy.ndimage.morphology import binary_closing, binary_dilation, binary_erosion, binary_hit_or_miss, binary_opening
+# from scipy.ndimage.morphology import binary_closing, binary_dilation, binary_erosion, binary_hit_or_miss, binary_opening
 from imutils import *
 
 
